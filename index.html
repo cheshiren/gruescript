@@ -579,7 +579,7 @@ function do_localisation() {
 	}
 }
 
-IS_EXPORT = true;
+IS_EXPORT = false;
  
 Gruescript = {};
 
@@ -964,61 +964,6 @@ Gruescript.commands = {
 			}
 		}
 	},
-	create: { // create an object
-		args: ['value','+value'],
-		func: function(thingName, descWords) {
-			if(!legal_name(roomName)) {
-				return do_runtime_error("couldn't create thing: \""+thingName+"\" is not a valid name");
-			}
-			if(Game.things[thingName]) {
-				return do_runtime_warning("couldn't create thing \""+thingName+"\" as it already exists");
-			}
-			Game.things[thingName] = buildThing({lineN:0,name:thingName,code:['thing '+thingName+' '+descWords.join(' ')]});
-		}
-	},
-	destroy: { // destroy an object
-		args: ['thing'],
-		func: function(thing) {
-			hide(thing);
-			delete Game.things.thing;
-		}
-	},
-	createroom: { // create a room
-		args: ['value','+value'],
-		func: function(roomName, descWords) {
-			if(!legal_name(roomName)) {
-				return do_runtime_error("couldn't create room: \""+roomName+"\" is not a valid name");
-			}
-			if(Game.rooms[roomName]) {
-				return do_runtime_warning("couldn't create room \""+roomName+"\" as it already exists");
-			}
-			Game.rooms[roomName] = buildroom({lineN:0,name:roomName,code:['room '+roomName+' '+descWords.join(' ')]});
-			Game.rooms[roomName].directions = {};
-		}
-	},
-	destroyroom: { // destroy a room
-		args: ['room'],
-		func: function(room) {
-			if(Game.vars.room==room) {
-				return do_runtime_error("couldn't destroy room \""+room+"\" as it is the hero's location");
-			}
-			for(var thing in Game.things) {
-				if(location_of(thing)==room) {
-					hide(thing);
-				}
-			}
-			for(var i in Game.rooms) {
-				if(i!=room) {
-					for(var dir in Game.rooms[i].directions) {
-						if(Game.rooms[i].directions[dir] == room) {
-							delete Game.rooms[i].directions[dir];
-						}
-					}
-				}
-			}
-			delete Game.rooms[room];
-		}
-	},
 	log: {
 		args: ['+value'],
 		func: function(values) {
@@ -1306,12 +1251,6 @@ Gruescript.listers = {
 		args: ['+value'],
 		func: function(values) {
 			return values;
-		}
-	},
-	from: {
-		args: ['string'],
-		func: function(words) {
-			return words.match(/\S+/g) || []
 		}
 	},
 	numbers: {
@@ -1885,12 +1824,12 @@ function readIfChanged() {
 		readGruescript();
 	}
 }
-/*
+
 $(document).ready(function() {
 	if(IS_EXPORT) {
 		buildGame(true);
 	}
-}); */
+});
 
 function readGruescript() {
 	GRUESCRIPT_SRC = $('#gsEdit').val().replaceAll('\r\n','\n').replaceAll('\r','\n').split('\n');
@@ -2915,7 +2854,7 @@ function gs_console_append(txt) {
 		$('#gs_console').append(txt);
 
 		var scrTop = $('#gs_console').prop("scrollHeight");
-		animate($('#gs_console'), {scrollTop: scrTop}, 500);
+		$('#gs_console').stop().animate({scrollTop: scrTop}, 500);
 	}
 }
 
@@ -2939,7 +2878,7 @@ function gs_console(txt) {
 		$('#gs_console').append('<br/>' + txt);
 		
 		var scrTop = $('#gs_console').prop("scrollHeight");
-		animate($('#gs_console'), {scrollTop: scrTop}, 500);
+		$('#gs_console').stop().animate({scrollTop: scrTop}, 500);
 	}
 }
 
@@ -3089,10 +3028,10 @@ function describe_room() {
 		
 		$('#conversation').html(html);
 		if($('#conversation').css('display')=='none') {
-			slideDown($('#conversation'));
+			$('#conversation').slideDown();
 		}
 	} else if($('#conversation').css('display')=='block') {
-		slideUp($('#conversation'));
+		$('#conversation').slideUp();
 	}
 	
 	// Room Description
@@ -3310,7 +3249,7 @@ function draw_noun(thing) {
 	if(Game.examine && !Game.things[thing].no_examine) {
 		return draw_button(img + desc, "do_verb('examine','" + thing + "')", true);
 	} else {
-		return img + expandBraces(desc);
+		return img + desc;
 	}
 }
 
@@ -3555,7 +3494,7 @@ function say(txt) {
 	
 	// animated scroll to the botton
 	var scrTop = $('#scroller').prop("scrollHeight");
-	animate($('#scroller'), {scrollTop: scrTop}, 500);
+	$('#scroller').stop().animate({scrollTop: scrTop}, 500);
 }
 function say_if(cond, trueTxt, falseTxt) {
 	if(cond) {
@@ -4293,26 +4232,26 @@ function confirm_restart() {
 	if(GAME_OVER) {
 		restart_game();
 	} else {
-		slideUp($('#prompt'));
-		slideUp($('#save_prompt'));
-		slideDown($('#restart_prompt'));
+		$('#prompt').slideUp();
+		$('#save_prompt').slideUp();
+		$('#restart_prompt').slideDown();
 	}
 }
 function really_restart() {
 	restart_game();
-	slideUp($('#restart_prompt'));
-	slideDown($('#prompt'));
+	$('#restart_prompt').slideUp();
+	$('#prompt').slideDown();
 	$('#text_in').focus();
 }
 function cancel_restart() {
-	slideUp($('#restart_prompt'));
-	slideDown($('#prompt'));
+	$('#restart_prompt').slideUp();
+	$('#prompt').slideDown();
 	$('#text_in').focus();
 }
 
 function restart_game() {
-	slideUp($('#save_prompt'));
-	slideDown($('#room_description'));
+	$('#save_prompt').slideUp();
+	$('#room_description').slideDown();
 	GAME_OVER = false;
 	Game = JSONfn.parse(INITIAL_GAME);
 	document.getElementById('scroller_content').innerHTML = '';
@@ -4863,7 +4802,7 @@ function pop_undo_state()
 	return old_state;
 }
 function undo() {
-	slideDown($('#room_description'));
+	$('#room_description').slideDown();
 	
 	dim_old_messages();
 	say('');
@@ -4905,8 +4844,8 @@ function save_game(savename) {
 			Game.title.replaceAll(/[^a-zA-Z0-9\s]/g,'');
 	}
 	
-	slideUp($('#restart_prompt'));
-	slideDown($('#save_prompt'));
+	$('#restart_prompt').slideUp();
+	$('#save_prompt').slideDown();
 	$('#save_name').val(savename).focus().select();
 }
 
@@ -4917,13 +4856,13 @@ function confirm_save() {
 	} else if(game_name.toUpperCase=='AUTOSAVE') {
 		say("'AUTOSAVE' is used internally by Gruescript. Please choose something else.");
 	} else {
-		slideUp($('#save_prompt'));
+		$('#save_prompt').slideUp();
 		SAVED_GAME_NAME = game_name;
 		store_game(game_name);
 	}
 }
 function cancel_save() {
-	slideUp($('#save_prompt'));
+	$('#save_prompt').slideUp();
 }
 function store_game(game_name, suppress_message, circumvent_thingy) {
 	game_name = game_name.toUpperCase();
@@ -5408,14 +5347,14 @@ function animate_heights() {
 }
 
 function animate_inventory_height() {
-	animate($('#inventory_container'), {height: $('#inventory').outerHeight()}, 300);
+	$('#inventory_container').stop().animate({height: $('#inventory').outerHeight()}, 300);
 	set_heights();
 }
 function animate_holding_height() {
-	animate($('#holding_container'), {height: $('#holding').outerHeight()}, 300);
+	$('#holding_container').stop().animate({height: $('#holding').outerHeight()}, 300);
 }
 function animate_room_description_height() {
-	animate($('#room_description_container'), {height: $('#room_description').outerHeight()}, 300);
+	$('#room_description_container').stop().animate({height: $('#room_description').outerHeight()}, 300);
 }
 
 function set_heights() { // no animation
@@ -5700,6 +5639,8 @@ ConversationVerbs = [
 		}
 	}
 ];
+
+
 
 		</script>
 		<script type="text/javascript" language="JavaScript" src="res/gs-utils.js"></script>

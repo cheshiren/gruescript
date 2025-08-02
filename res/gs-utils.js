@@ -111,32 +111,6 @@ function syncScroll() {
 	SYNTAX_DIV.scrollLeft = GSEDIT.scrollLeft;
 }
 
-// animation that respects reduced-motion preference
-function allowMotion() {
-	return window.matchMedia('(prefers-reduced-motion: no-preference)').matches;
-}
-
-function animate(jQueryElement, animationProperties, duration, force) {
-	var preferredDuration = force || allowMotion() ? duration : 0;
-	return jQueryElement.stop().animate(animationProperties, preferredDuration);
-}
-
-function slideDown(jQueryElement, force) {
-	if (force || allowMotion()) {
-		return jQueryElement.slideDown();
-	} else {
-		return jQueryElement.show();
-	}
-}
-
-function slideUp(jQueryElement, force) {
-	if (force || allowMotion()) {
-		return jQueryElement.slideUp();
-	} else {
-		return jQueryElement.hide();
-	}
-}
-
 SYNTAX_HIGHLIGHTING = true;
 function toggleHighlighting() {
 	if(SYNTAX_HIGHLIGHTING) {
@@ -266,7 +240,7 @@ function doHighlighting() {
 			// instructions (& other things) with a string as their first argument
 			line = line.replace(/(^\s*(say|die|js|game|author|prompt|display)\s+)(.*)$/g, '$1<span class="string">$3</span>');
 			// instructions with a string as their second argument, and block names that include a printed message
-			line = line.replace(/(^\s*(write|is|room|thing|tagdesc|sayat|localise|localize|create|createroom)\s+[a-zA-Z_]+\s+)(.*)$/g, '$1<span class="string">$3</span>');
+			line = line.replace(/(^\s*(write|is|room|thing|tagdesc|sayat|localise|localize)\s+[a-zA-Z_]+\s+)(.*)$/g, '$1<span class="string">$3</span>');
 			var str = '';
 			var strIx = line.indexOf('<span class="string">');
 			if(strIx>=0) {
@@ -276,7 +250,7 @@ function doHighlighting() {
 			
 			// commands
 			// todo: might save a few milliseconds if the words in these regexps were sorted by most common first
-			line = line.replaceAll(/(^\s*)(run|hide|bring|give|carry|wear|unwear|unhold|put|putnear|goto|swap|tag|untag|tagroom|untagroom|assign|write|add|random|say|die|open|close|status|pick|count|isthing|isroom|log|create|createroom|destroy|destroyroom)(?=\s|$)/g,'$1<span class="command">$2</span>');
+			line = line.replaceAll(/(^\s*)(run|hide|bring|give|carry|wear|unwear|unhold|put|putnear|goto|swap|tag|untag|tagroom|untagroom|assign|write|add|random|say|die|open|close|status|pick|count|isthing|isroom|log)(?=\s|$)/g,'$1<span class="command">$2</span>');
 			// assertions
 			line = line.replaceAll(/(^\s*)(!?(carried|held|here|inscope|visible|at|thingat|near|has|hasany|hasall|taghere|cansee|is|eq|gt|lt|contains|continue|try|js))(?=\s|$)/g,'$1<span class="assertion">$2</span>');
 			// iterators
@@ -285,7 +259,7 @@ function doHighlighting() {
 			line=line.replaceAll(/(^\s*)(game|room|exit|thing|rule|verb|setverb|proc|tagdesc|var)(?=\s|$)/g,'$1<span class="blocktype">$2</span>');
 			
 			// special tags, variables and property names, iterator lists & orderers
-			line=line.replaceAll(/\s(things|rooms|carried|in|tagged|these|from|here|inscope|numbers|forward|backward|shuffle|start|dark|portable|wearable|worn|alive|lightsource|plural|indef|def|male|female|nonbinary|list_last|quiet|on|off|score|maxscore|intransitive)(?=\s|$)/g,' <span class="specialtag">$1</span>');
+			line=line.replaceAll(/\s(things|rooms|carried|in|tagged|these|here|inscope|numbers|forward|backward|shuffle|start|dark|portable|wearable|worn|alive|lightsource|plural|indef|def|male|female|nonbinary|list_last|quiet|on|off|score|maxscore|intransitive)(?=\s|$)/g,' <span class="specialtag">$1</span>');
 
 			// properties and directions
 			line=line.replaceAll(/(^\s*)(prop|name|desc|north|northeast|east|southeast|south|southwest|west|northwest|up|down|in|out|fore|aft|port|starboard|id|author|version|person|examine|conversation|show_title|instructions|wait|tags|dir|loc|verbs|cverbs|display|prompt|pronoun|localise|localize|color|colour)(?=\s|$)/g,'$1<span class="prop">$2</span>');
@@ -461,11 +435,11 @@ function doOptionsMenu() {
 	}
 	if(OPTIONS_SHOWN) {
 		$('#options_label').html("Options &darr;");
-		slideUp($('#optionsMenu'));
+		$('#optionsMenu').slideUp();
 		OPTIONS_SHOWN = false;
 	} else {
 		$('#options_label').html("Options &uarr;");
-		slideDown($('#optionsMenu'));
+		$('#optionsMenu').slideDown();
 		OPTIONS_SHOWN = true;
 		// if user leaves the menu open for 10s,
 		// check the mouse isn't still over it,
@@ -476,7 +450,7 @@ function doOptionsMenu() {
 function hideOptions() {
 	// if mouse isn't currently over the menu, hide it
 	if(!$('#optionsMenu:hover').length && !$('#optionsButton:hover').length) {
-		slideUp($('#optionsMenu'));
+		$('#optionsMenu').slideUp();
 		OPTIONS_SHOWN = false;
 	} else { // otherwise check again in 2s
 		setTimeout(()=>{hideOptions();},2000);
@@ -518,11 +492,11 @@ function doExamplesMenu() {
 	}
 	if(EXAMPLES_SHOWN) {
 		$('#examples_label').html("Examples &darr;");
-		slideUp($('#examplesMenu'));
+		$('#examplesMenu').slideUp();
 		EXAMPLES_SHOWN = false;
 	} else {
 		$('#examples_label').html("Examples &uarr;");
-		slideDown($('#examplesMenu'));
+		$('#examplesMenu').slideDown();
 		EXAMPLES_SHOWN = true;
 		// if user leaves the menu open for 10s,
 		// check the mouse isn't still over it,
@@ -533,7 +507,7 @@ function doExamplesMenu() {
 function hideExamples() {
 	// if mouse isn't currently over the menu, hide it
 	if(!$('#examplesMenu:hover').length && !$('#examplesButton:hover').length) {
-		slideUp($('#examplesMenu'));
+		$('#examplesMenu').slideUp();
 		EXAMPLES_SHOWN = false;
 	} else { // otherwise check again in 2s
 		setTimeout(()=>{hideExamples();},2000);
