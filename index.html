@@ -1994,9 +1994,9 @@ function numeric(num) { // positive or negative integer
 
 function legal_name(name, allowDot) {
 	if(allowDot) {
-		return /^\$?[a-zA-Z0-9_]+(\.dir)?(\.\$?[a-zA-Z0-9_]+)?$/.test(name);
+		return /^\$?[a-zA-Zа-яА-Я0-9_]+(\.dir)?(\.\$?[a-zA-Zа-яА-Я0-9_]+)?$/.test(name);
 	} else {
-		return /^[a-zA-Z0-9_]+$/.test(name);
+		return /^[a-zA-Zа-яА-Я0-9_]+$/.test(name);
 	}
 }
 
