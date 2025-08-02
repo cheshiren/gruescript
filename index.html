@@ -1956,7 +1956,7 @@ function stripComments(txt) {
 	return txt;
 }
 function getWords(txt) {
-	var words = stripComments(txt).trim().split(/(?!\u00A0)\s/);
+	var words = stripComments(txt).trim().split(/(?!\u00A0)\s+/);
 	if(words.length==1 && words[0]=='') {
 		return [];
 	} else {
@@ -3214,7 +3214,7 @@ function draw_button(display_text, script, is_examine, is_direction, is_inventor
 	return '<button ' +
 		(classname?'class="'+classname+'" ':'') +
 		(id?'id="'+id+'" ':'') +
-		'type="button" ' + (is_examine? 'class="examine" ' : '') +(is_direction? 'class="direction" ' : '') + 'onClick="' + script + '" ' + (is_held ? 'disabled="disabled" ' : '') + '>' + expandBraces(display_text) + '</button>';
+		'type="button" ' + (is_examine? 'class="examine" ' : '') +(is_direction? 'class="direction" ' : '') + 'onClick="' + script + '" ' + (is_held ? 'disabled="disabled" ' : '') + '>' + expandBraces(display_text.replaceAll('_', ' ')) + '</button>'; // хак: добавил замену '_' на ' ', потому что в функции display_text() ничего не срабатывало
 }
 
 function get_tagdescs(thing) {
