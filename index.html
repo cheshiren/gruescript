@@ -1933,9 +1933,9 @@ function numeric(num) { // positive or negative integer
 
 function legal_name(name, allowDot) {
 	if(allowDot) {
-		return /^\$?[a-zA-Zа-яА-Я0-9_]+(\.dir)?(\.\$?[a-zA-Zа-яА-Я0-9_]+)?$/.test(name);
+		return /^\$?[a-zA-Zа-яА-Я0-9_\u00A0]+(\.dir)?(\.\$?[a-zA-Zа-яА-Я0-9_\u00A0]+)?$/.test(name);
 	} else {
-		return /^[a-zA-Zа-яА-Я0-9_]+$/.test(name);
+		return /^[a-zA-Zа-яА-Я0-9_\u00A0]+$/.test(name);
 	}
 }
 
@@ -1956,7 +1956,7 @@ function stripComments(txt) {
 	return txt;
 }
 function getWords(txt) {
-	var words = stripComments(txt).trim().split(/\s+/);
+	var words = stripComments(txt).trim().split(/(?!\u00A0)\s/);
 	if(words.length==1 && words[0]=='') {
 		return [];
 	} else {
