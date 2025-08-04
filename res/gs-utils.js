@@ -534,6 +534,83 @@ function loadExample(example) {
 
 EXAMPLES = {};
 
+EXAMPLES['Tying to'] = `
+game Fun with prepositions
+
+room bedroom
+
+thing bed кровать
+prop nameD кровати
+prop nameG кровати
+loc bedroom
+tags tiable_to
+
+thing table стол
+prop nameD столу
+prop nameG стола
+loc bedroom
+tags tiable_to
+
+thing door дверь
+loc bedroom
+
+thing sheet простыня
+prop nameA простыню
+loc bedroom
+tags tiable
+
+setverb привязать
+has $this tiable
+!has $this tied
+eq $tying 0
+
+verb привязать
+prompt привязать {$this.nameA}
+assign tying $this
+say К чему?
+
+setverb перестать_привязывать
+has $this tiable
+eq $this $tying
+
+verb перестать_привязывать
+prompt перестать привязывать {$this.nameA}
+assign tying 0
+say Передумал.
+
+setverb to
+has $this tiable_to
+!eq $tying 0
+!eq $this $tying
+!has $this tied_to
+
+rule
+!eq $tying 0
+!eq $verb привязать
+assign tying 0
+
+verb to
+display ←
+prompt к {$this.nameD}
+say Ты привязываешь {$tying.nameA} к {$this.nameD}.
+assign $tying.tied_to_nameD $this.nameD
+assign $tying.tied_to_nameG $this.nameG
+clear tied_to
+tag $thing tied_to
+tag $tying tied
+
+setverb untie
+has $this tied
+
+verb untie
+display отвязать
+prompt отвязать {$this.nameA}
+say Ты отвязываешь {$this.nameA} от {$this.tied_to_nameG}.
+clear tied_to
+untag $this tied
+
+tagdesc tied привязана к {$this.tied_to_nameD}`
+
 /*
  *
  *   Locks and keys
